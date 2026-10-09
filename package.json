@@ -1,0 +1,27 @@
+{
+  "name": "proyecto2-db-cuenta-ap",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DamianAm2908/Proyecto2-DB-Cuenta-AP.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/DamianAm2908/Proyecto2-DB-Cuenta-AP/issues"
+  },
+  "homepage": "https://github.com/DamianAm2908/Proyecto2-DB-Cuenta-AP#readme",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.6",
+    "express": "^5.2.1",
+    "mssql": "^12.7.4"
+  }
+}
