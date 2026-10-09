@@ -1,14 +1,21 @@
 const sql = require("mssql");
 require("dotenv").config();
 
+console.log("--- DIAGNÓSTICO DE CONEXIÓN ---");
+console.log("Servidor:", process.env.DB_SERVER);
+console.log("Usuario:", process.env.DB_USER);
+console.log("Password cargado:", process.env.DB_PASSWORD);
+console.log("Base de datos:", process.env.DB_DATABASE);
+console.log("-------------------------------");
+
 const dbConfig = {
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  server: process.env.DB_SERVER,
-  database: process.env.DB_DATABASE,
+  user: process.env.DB_USER || "sa",
+  password: process.env.DB_PASSWORD || "Bd2026Segura!",
+  server: process.env.DB_SERVER || "127.0.0.1",
+  database: process.env.DB_DATABASE || "CuentaAhorrosDB",
   port: parseInt(process.env.DB_PORT, 10) || 1433,
   options: {
-    encrypt: false, // Cambiar a true si usas Azure
+    encrypt: false,
     trustServerCertificate: true,
   },
 };
@@ -20,11 +27,8 @@ const poolPromise = new sql.ConnectionPool(dbConfig)
     return pool;
   })
   .catch((err) => {
-    console.error("❌ Error de conexión a la Base de Datos:", err);
+    console.error("❌ Error de conexión a la Base de Datos:", err.message);
     process.exit(1);
   });
 
-module.exports = {
-  sql,
-  poolPromise,
-};
+module.exports = { sql, poolPromise };
