@@ -26,12 +26,10 @@ app.post("/api/login", async (req, res) => {
     if (user && user.ErrorCode === 1) {
       res.json({ success: true, user });
     } else {
-      res
-        .status(401)
-        .json({
-          success: false,
-          message: user.Message || "Credenciales inválidas",
-        });
+      res.status(401).json({
+        success: false,
+        message: user.Message || "Credenciales inválidas",
+      });
     }
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
