@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - Sistema de Cuentas de Ahorros</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f6f9;
+        margin: 0;
+        padding: 20px;
+      }
+      .header {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 800px;
+        margin: 0 auto 20px auto;
+      }
+      .card {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        max-width: 800px;
+        margin: 0 auto;
+      }
+      h2 {
+        color: #333;
+        margin-top: 0;
+      }
+      button {
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #c82333;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h2 id="welcomeText">Bienvenido</h2>
+      <button onclick="logout()">Cerrar Sesión</button>
+    </div>
+
+    <div class="card">
+      <h3>Tus Cuentas y Movimientos</h3>
+      <p>
+        Aquí podrás consultar los estados de cuenta y beneficiarios
+        próximamente.
+      </p>
+    </div>
+
+    <script>
+      // Recuperar los datos del usuario guardados al hacer login
+      const userData = JSON.parse(localStorage.getItem("usuarioLogueado"));
+
+      if (!userData) {
+        // Si no hay sesión, redirigir al login
+        window.location.href = "/index.html";
+      } else {
+        document.getElementById("welcomeText").textContent =
+          `Bienvenido, ${userData.Username || "Usuario"}`;
+      }
+
+      function logout() {
+        localStorage.removeItem("usuarioLogueado");
+        window.location.href = "/index.html";
+      }
+    </script>
+  </body>
+</html>

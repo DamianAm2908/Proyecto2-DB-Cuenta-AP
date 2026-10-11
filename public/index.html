@@ -118,7 +118,14 @@
           if (data.success) {
             mensajeDiv.textContent = "¡Ingreso exitoso! Redirigiendo...";
             mensajeDiv.className = "success";
-            // Aquí puedes redirigir a una página de dashboard o principal más adelante
+
+            // Guardar los datos del usuario en el almacenamiento local del navegador
+            localStorage.setItem("usuarioLogueado", JSON.stringify(data.user));
+
+            // Redirigir al dashboard después de 1 segundo
+            setTimeout(() => {
+              window.location.href = "/dashboard.html";
+            }, 1000);
           } else {
             mensajeDiv.textContent =
               data.message || "Credenciales incorrectas.";
