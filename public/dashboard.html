@@ -112,6 +112,36 @@
       </table>
     </div>
 
+    <!-- Sección de Estados de Cuenta -->
+    <div class="card">
+      <h3>Consultar Estados de Cuenta</h3>
+      <div class="form-group">
+        <label for="idCuentaEstadoInput">ID de Cuenta:</label>
+        <input type="number" id="idCuentaEstadoInput" value="1" />
+        <button onclick="cargarEstadosCuenta()">Consultar Movimientos</button>
+      </div>
+
+      <table id="tablaEstadosCuenta">
+        <thead>
+          <tr>
+            <th>Número de Estado</th>
+            <th>Fecha</th>
+            <th>Saldo Inicial</th>
+            <th>Depósitos</th>
+            <th>Retiros</th>
+            <th>Saldo Final</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td colspan="6" style="text-align: center; color: #666">
+              Ingrese un ID de cuenta y haga clic en consultar.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
     <script>
       // Recuperar los datos del usuario guardados al hacer login
       const userData = JSON.parse(localStorage.getItem("usuarioLogueado"));
@@ -121,10 +151,12 @@
       } else {
         document.getElementById("welcomeText").textContent =
           `Bienvenido, ${userData.Username || "Usuario"}`;
-        // Cargar automáticamente para la cuenta 1 al iniciar
+        // Cargar automáticamente al iniciar para la cuenta 1
         cargarBeneficiarios();
+        cargarEstadosCuenta();
       }
 
+      // Función para cargar los beneficiarios
       async function cargarBeneficiarios() {
         const idCuenta = document.getElementById("idCuentaInput").value;
         const tbody = document.querySelector("#tablaBeneficiarios tbody");
@@ -155,6 +187,48 @@
           console.error("Error:", error);
           tbody.innerHTML =
             '<tr><td colspan="3" style="text-align: center; color: #dc3545;">Error al conectar con el servidor.</td></tr>';
+        }
+      }
+
+      // Función para cargar los estados de cuenta
+      async function cargarEstadosCuenta() {
+        const idCuenta = document.getElementById("idCuentaEstadoInput").value;
+        const tbody = document.querySelector("#tablaEstadosCuenta tbody");
+
+        tbody.innerHTML =
+          '<tr><td colspan="6" style="text-align: center;">Cargando...</td></tr>';
+
+        try {
+          // Asegúrate de que este endpoint coincida con el que creaste en tu backend Express
+          const response = await fetch(`/api/estados-cuenta/${idCuenta}`);
+          const data = await response.json();
+
+          if (
+            data.success &&
+            data.estadosCuenta &&
+            data.estadosCuenta.length > 0
+          ) {
+            tbody.innerHTML = "";
+            data.estadosCuenta.forEach((e) => {
+              tbody.innerHTML += `
+                            <tr>
+                                <td>${e.IdEstadoCuenta || e.NumeroEstado || "N/A"}</td>
+                                <td>${e.Fecha ? new Date(e.Fecha).toLocaleDateString() : "N/A"}</td>
+                                <td>$${e.SaldoInicial || 0}</td>
+                                <td>$${e.Depositos || 0}</td>
+                                <td>$${e.Retiros || 0}</td>
+                                <td>$${e.SaldoFinal || 0}</td>
+                            </tr>
+                        `;
+            });
+          } else {
+            tbody.innerHTML =
+              '<tr><td colspan="6" style="text-align: center; color: #666;">No se encontraron estados de cuenta para esta cuenta.</td></tr>';
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          tbody.innerHTML =
+            '<tr><td colspan="6" style="text-align: center; color: #dc3545;">Error al conectar con el servidor o endpoint pendiente.</td></tr>';
         }
       }
 
