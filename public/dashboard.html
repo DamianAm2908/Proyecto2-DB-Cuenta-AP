@@ -28,14 +28,15 @@
         border-radius: 8px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         max-width: 800px;
-        margin: 0 auto;
+        margin: 0 auto 20px auto;
       }
-      h2 {
+      h2,
+      h3 {
         color: #333;
         margin-top: 0;
       }
       button {
-        background-color: #dc3545;
+        background-color: #007bff;
         color: white;
         border: none;
         padding: 8px 15px;
@@ -43,22 +44,72 @@
         cursor: pointer;
       }
       button:hover {
+        background-color: #0056b3;
+      }
+      .btn-danger {
+        background-color: #dc3545;
+      }
+      .btn-danger:hover {
         background-color: #c82333;
+      }
+      .form-group {
+        margin-bottom: 15px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      input {
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+      }
+      th,
+      td {
+        padding: 10px;
+        border: 1px solid #eee;
+        text-align: left;
+      }
+      th {
+        background-color: #f8f9fa;
       }
     </style>
   </head>
   <body>
     <div class="header">
       <h2 id="welcomeText">Bienvenido</h2>
-      <button onclick="logout()">Cerrar Sesión</button>
+      <button class="btn-danger" onclick="logout()">Cerrar Sesión</button>
     </div>
 
+    <!-- Sección de Beneficiarios -->
     <div class="card">
-      <h3>Tus Cuentas y Movimientos</h3>
-      <p>
-        Aquí podrás consultar los estados de cuenta y beneficiarios
-        próximamente.
-      </p>
+      <h3>Consultar Beneficiarios por Cuenta</h3>
+      <div class="form-group">
+        <label for="idCuentaInput">ID de Cuenta:</label>
+        <input type="number" id="idCuentaInput" value="1" />
+        <button onclick="cargarBeneficiarios()">Consultar</button>
+      </div>
+
+      <table id="tablaBeneficiarios">
+        <thead>
+          <tr>
+            <th>Nombre Beneficiario</th>
+            <th>Parentesco</th>
+            <th>Porcentaje (%)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td colspan="3" style="text-align: center; color: #666">
+              Ingrese un ID de cuenta y haga clic en consultar.
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
     <script>
@@ -66,11 +117,45 @@
       const userData = JSON.parse(localStorage.getItem("usuarioLogueado"));
 
       if (!userData) {
-        // Si no hay sesión, redirigir al login
         window.location.href = "/index.html";
       } else {
         document.getElementById("welcomeText").textContent =
           `Bienvenido, ${userData.Username || "Usuario"}`;
+        // Cargar automáticamente para la cuenta 1 al iniciar
+        cargarBeneficiarios();
+      }
+
+      async function cargarBeneficiarios() {
+        const idCuenta = document.getElementById("idCuentaInput").value;
+        const tbody = document.querySelector("#tablaBeneficiarios tbody");
+
+        tbody.innerHTML =
+          '<tr><td colspan="3" style="text-align: center;">Cargando...</td></tr>';
+
+        try {
+          const response = await fetch(`/api/beneficiarios/${idCuenta}`);
+          const data = await response.json();
+
+          if (data.success && data.beneficiarios.length > 0) {
+            tbody.innerHTML = "";
+            data.beneficiarios.forEach((b) => {
+              tbody.innerHTML += `
+                            <tr>
+                                <td>${b.Nombre || b.NombrePersona || "N/A"}</td>
+                                <td>${b.ParentezcoNombre || "N/A"}</td>
+                                <td>${b.Porcentaje}%</td>
+                            </tr>
+                        `;
+            });
+          } else {
+            tbody.innerHTML =
+              '<tr><td colspan="3" style="text-align: center; color: #666;">No se encontraron beneficiarios para esta cuenta.</td></tr>';
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          tbody.innerHTML =
+            '<tr><td colspan="3" style="text-align: center; color: #dc3545;">Error al conectar con el servidor.</td></tr>';
+        }
       }
 
       function logout() {
